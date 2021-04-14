@@ -1,15 +1,15 @@
 # Тестовое задание Selectel
 
 ## Запуск:
-* Запустить докер контейнеры приложения и бд postgress
+* Запустить докер контейнеры приложения и БД PostgreSQL
 ```shell script
 docker-compose up -d  
 ```
-* Отrрыть терминал и выполнить команду для перевода к командному интерфейсу докер контейнера приложения
+* Открыть терминал и выполнить команду для перевода к командному интерфейсу докер контейнера приложения
 ```shell script
 docker exec -it testtask_flask_1 /bin/sh
 ```
-* Выполнить команду инициализации бд 
+* Выполнить команду инициализации БД 
 ```shell script
 python manage.py db init
 ```
@@ -17,7 +17,7 @@ python manage.py db init
 ```shell script
 python manage.py db migrate
 ```
-* Создать таблицы в бд
+* Создать таблицы в БД
 ```shell script
 python manage.py db upgrade
 ```
@@ -262,3 +262,16 @@ python tests.py
     "result": 2.0
 }
 ``` 
+#### Возможные проблемы:
+* Если не выполнилась команда
+```shell script
+docker exec -it testtask_flask_1 /bin/sh
+```
+* Необходимо выполнить команду для просмотра активных контейнеров
+```shell script
+docker ps
+```
+* Найти CONTAINER ID нашего запущенного приложения и вставить его в команду
+```shell script
+docker exec -it <CONTAINER ID> /bin/sh
+```
