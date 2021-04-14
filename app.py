@@ -1,6 +1,7 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
+from functools import wraps
 
 app = Flask(__name__)
 
@@ -10,6 +11,126 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://testdbuser:testdbpass@{da
 db = SQLAlchemy(app)
 
 
+######## deco
+
+def info_dec(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        print(f"Function {func.__name__} was called.")
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
+def change_dec(last_arg_change=1):
+    def dec(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            *el, last = args
+            last *= last_arg_change
+            args = *el, last
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return dec
+
+
+@app.route('/api/sum', methods=['POST'])
+def get_sum():
+    content = request.json
+    last_arg_multiplier = content['last_arg_multiplier']
+
+    @change_dec(last_arg_change=last_arg_multiplier)
+    @info_dec
+    def my_sum(*args, reverse=False):
+        if reverse:
+            args = args[::-1]
+        res = args[0]
+        for el in args[1:]:
+            res += el
+        return res
+
+    is_reversed = eval(content['reverse'])
+    args = content['args']
+    result = my_sum(*args, reverse=is_reversed)
+    response = {
+        'result': result
+    }
+    return jsonify(response)
+
+@app.route('/api/dif', methods=['POST'])
+def get_dif():
+    content = request.json
+    last_arg_multiplier = content['last_arg_multiplier']
+
+    @change_dec(last_arg_change=last_arg_multiplier)
+    @info_dec
+    def my_dif(*args, reverse=False):
+        if reverse:
+            args = args[::-1]
+        res = args[0]
+        for el in args[1:]:
+            res -= el
+        return res
+
+    is_reversed = eval(content['reverse'])
+    args = content['args']
+    result = my_dif(*args, reverse=is_reversed)
+    response = {
+        'result': result
+    }
+    return jsonify(response)
+
+@app.route('/api/prod', methods=['POST'])
+def get_prod():
+    content = request.json
+    last_arg_multiplier = content['last_arg_multiplier']
+
+    @change_dec(last_arg_change=last_arg_multiplier)
+    @info_dec
+    def my_prod(*args, reverse=False):
+        if reverse:
+            args = args[::-1]
+        res = args[0]
+        for el in args[1:]:
+            res *= el
+        return res
+
+    is_reversed = eval(content['reverse'])
+    args = content['args']
+    result = my_prod(*args, reverse=is_reversed)
+    response = {
+        'result': result
+    }
+    return jsonify(response)
+
+@app.route('/api/div', methods=['POST'])
+def get_div():
+    content = request.json
+    last_arg_multiplier = content['last_arg_multiplier']
+
+    @change_dec(last_arg_change=last_arg_multiplier)
+    @info_dec
+    def my_div(*args, reverse=False):
+        if reverse:
+            args = args[::-1]
+        res = args[0]
+        try:
+            for el in args[1:]:
+                res /= el
+            return res
+        except ZeroDivisionError as error:
+            return f"Error: {error}"
+
+    is_reversed = eval(content['reverse'])
+    args = content['args']
+    result = my_div(*args, reverse=is_reversed)
+    response = {
+        'result': result
+    }
+    return jsonify(response)
+########
 
 @app.route('/api/busy_racks')
 def get_busy_racks():
@@ -81,18 +202,16 @@ def get_racks_with_max_size():
     return jsonify(json)
 
 
-
-
 @app.route('/')
 def index():
-    main_page_text = "<h1>Urls:</h1>"\
+    main_page_text = "<h1>Urls:</h1>" \
                      "<ul>" \
                      "<li><h3>/api/rooms</h3></li>" \
-                     "<li><h3>/api/rooms/pk</h3></li>"\
+                     "<li><h3>/api/rooms/pk</h3></li>" \
                      "<li><h3>/api/customers</h3></li>" \
                      "<li><h3>/api/customers/pk</h3></li>" \
                      "<li><h3>/api/racks</h3></li>" \
-                     "<li><h3>/api/racks/pk</h3></li>"\
+                     "<li><h3>/api/racks/pk</h3></li>" \
                      "<li><h3>/api/busy_racks</h3></li>" \
                      "<li><h3>/api/racks_with_max_size</h3></li>" \
                      "<li><h3>/api/customers_in_rooms</h3></li>" \
