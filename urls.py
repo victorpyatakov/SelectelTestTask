@@ -85,15 +85,15 @@ def get_busy_racks():
         "where state like 'occupied'"
     )
     result = db.engine.execute(sql_racks).fetchall()
-    json = {}
+    response = {}
     for i in range(len(result)):
-        json[i] = {
+        response[i] = {
             'rack_id': result[i][0],
             'rack_name': result[i][1],
             'room_name': result[i][2],
             'customer_name': result[i][3],
         }
-    return jsonify(json)
+    return jsonify(response)
 
 
 @urls.route('/api/customers_in_rooms')
@@ -109,7 +109,7 @@ def get_customers_in_rooms():
         "where state like 'occupied'"
     )
     rooms = db.engine.execute(sql_rooms).fetchall()
-    json = {}
+    response = {}
     for i in range(len(rooms)):
         sql_rooms_customer = text(
             "select distinct customer_id  "
@@ -117,12 +117,12 @@ def get_customers_in_rooms():
             f"where room_id = {rooms[i][0]} and state like '%occupied%' "
         )
         rooms_customers = db.engine.execute(sql_rooms_customer).fetchall()
-        json[i] = {
+        response[i] = {
             'room_id': rooms[i][0],
             'room_name': rooms[i][1],
             'customers_id': [c[0] for c in rooms_customers]
         }
-    return jsonify(json)
+    return jsonify(response)
 
 
 @urls.route('/api/racks_with_max_size')
@@ -137,7 +137,7 @@ def get_racks_with_max_size():
         "group by room_id"
     )
     rooms_with_max_size_racks = db.engine.execute(sql_rooms_with_max_size_racks).fetchall()
-    json = {}
+    response = {}
     for i in range(len(rooms_with_max_size_racks)):
         sql_id_racks_with_max_size = text(
             "select id  "
@@ -146,12 +146,12 @@ def get_racks_with_max_size():
             "limit 1"
         )
         id_racks_with_max_size = db.engine.execute(sql_id_racks_with_max_size).fetchone()
-        json[i] = {
+        response[i] = {
             'room_id': rooms_with_max_size_racks[i][0],
             'rack_id': id_racks_with_max_size[0],
             'rack_size': rooms_with_max_size_racks[i][1]
         }
-    return jsonify(json)
+    return jsonify(response)
 
 
 @urls.route('/api/sum', methods=['POST'])
