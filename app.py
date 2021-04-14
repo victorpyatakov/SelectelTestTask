@@ -5,10 +5,11 @@ from functools import wraps
 
 app = Flask(__name__)
 
-# database = 'database'
-database = '0.0.0.0'
+database = 'database'
+#database = '0.0.0.0'
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://testdbuser:testdbpass@{database}:5432/testdb'
 db = SQLAlchemy(app)
+
 
 
 ######## deco
@@ -215,6 +216,10 @@ def index():
                      "<li><h3>/api/busy_racks</h3></li>" \
                      "<li><h3>/api/racks_with_max_size</h3></li>" \
                      "<li><h3>/api/customers_in_rooms</h3></li>" \
+                     "<li><h3>/api/sum</h3></li>"\
+                     "<li><h3>/api/dif</h3></li>" \
+                     "<li><h3>/api/prod</h3></li>" \
+                     "<li><h3>/api/div</h3></li>" \
                      "</ul>"
     return main_page_text
 
