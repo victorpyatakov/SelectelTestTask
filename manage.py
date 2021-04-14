@@ -1,18 +1,17 @@
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
-
-
-from app import app, db, Room, Customer, Rack
+from app import app, db
+from models import Room, Customer, Rack
 
 migrate = Migrate(app, db)
 manager = Manager(app)
 
 manager.add_command('db', MigrateCommand)
 
-# Создать все таблицы в БД
+
 @manager.command
 def db_create():
-    # create all the database and all the db tables
+    """ Создаем таблицы и заполняем данными"""
     db.create_all()
 
     # insert rooms
@@ -26,7 +25,7 @@ def db_create():
     db.session.add(room4)
     db.session.commit()
 
-    # insert cistomers
+    # insert customers
     customer1 = Customer(name="Client-1")
     customer2 = Customer(name="Client-2")
     customer3 = Customer(name="Client-3")
